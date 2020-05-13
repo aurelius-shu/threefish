@@ -13,4 +13,4 @@ class User(models.Model):
     password = models.CharField(max_length=128)
     reg_time = models.DateTimeField('time registered')
     last_login = models.DateTimeField('time last login')
-    status = models.BooleanField('active or inactive')
+    is_active = models.BooleanField('active or inactive')
