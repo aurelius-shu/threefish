@@ -1,0 +1,10 @@
+{
+    "python.pythonPath": "D:\\WorkSpace\\venvs\\threefish\\Scripts\\python",
+    "python.formatting.provider": "yapf",
+    "editor.fontSize": 15,
+    "editor.suggestFontSize": 15,
+    "editor.fontFamily": "Consolas",
+    "debug.console.fontSize": 15,
+    "markdown.preview.fontSize": 15,
+    "terminal.integrated.fontSize": 15,
+}
