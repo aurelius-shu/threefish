@@ -9,9 +9,9 @@ from django.utils import timezone
 
 def users(request):
     us = User.objects.all()
-    users = []
-    for user in us:
-        users.append(
-            {'username': user.username, 'nickname': user.nickname, 'email': user.email}
-        )
-    return HttpResponse(users)
+    # users = []
+    # for user in us:
+    #     users.append(
+    #         {'username': user.username, 'nickname': user.nickname, 'email': user.email}
+    #     )
+    return HttpResponse(us)
