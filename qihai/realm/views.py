@@ -7,6 +7,10 @@ from .models import User
 from django.utils import timezone
 
 
+def index(request):
+    return HttpResponse('Hello Django.')
+
+
 def users(request):
     us = User.objects.all()
     # users = []
@@ -15,3 +19,12 @@ def users(request):
     #         {'username': user.username, 'nickname': user.nickname, 'email': user.email}
     #     )
     return HttpResponse(us)
+
+
+def uploadImage(request):
+    if request.method == 'POST':
+        pass
+    # img = Img(img_url=request.FILES.get('img'))
+    # img.save()
+    # return render(request, 'imgUpload.html')
+    return HttpResponse('ok')
