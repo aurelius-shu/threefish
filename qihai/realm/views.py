@@ -3,12 +3,12 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.urls import reverse
 from django.views import generic
 from django.template import loader
-from .models import User
+from .models import User, Image
 from django.utils import timezone
 
 
 def index(request):
-    return HttpResponse('Hello Django.')
+    return HttpResponse('<input accept="image/*,audio/*" type="file"/>')
 
 
 def users(request):
@@ -21,10 +21,14 @@ def users(request):
     return HttpResponse(us)
 
 
+from django.views.decorators.csrf import csrf_exempt
+
+
+@csrf_exempt
 def uploadImage(request):
     if request.method == 'POST':
-        pass
-    # img = Img(img_url=request.FILES.get('img'))
-    # img.save()
-    # return render(request, 'imgUpload.html')
+        image_inm = request.FILES.get('file')
+        if image_inm:
+            image = Image(filename=image_inm.name, upload_time=timezone.now(), img_url=image_inm)
+            image.save()
     return HttpResponse('ok')

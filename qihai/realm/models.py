@@ -33,16 +33,15 @@ class Image(models.Model):
     图片资源
     """
 
-    # def __str__(self):
-    #     return '<%s>%s' % (self.upload_time, self.filename)
-    #
+    def __str__(self):
+        return '<%s>%s' % (self.upload_time, self.filename)
+
     # md5_key = models.CharField(max_length=36)
-    # filename = models.CharField(max_length=50)
-    # upload_user = models.ForeignKey(User, on_delete=models.SET_NULL)
-    # upload_time = models.DateTimeField('time upload')
-    # image_base64 = models.TextField()
-    # 指定图片上传路径，即media/photos/
-    img_url = models.ImageField(upload_to='photos/', blank=True, null=True)
+    filename = models.CharField(max_length=200)
+    # upload_user = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
+    upload_time = models.DateTimeField('time upload')
+    # 指定图片上传路径，即media/realm/
+    img_url = models.ImageField(upload_to='realm/', blank=True, null=True)
 
 
 class Article(models.Model):
@@ -55,7 +54,7 @@ class Article(models.Model):
 
     title = models.CharField(max_length=100)
     comment = models.CharField(max_length=255)
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
     image = models.ImageField()
     publish_time = models.DateTimeField('time published')
     content = models.TextField()
