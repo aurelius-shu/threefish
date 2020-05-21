@@ -5,6 +5,7 @@ from django.views import generic
 from django.template import loader
 from .models import User, Image
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 
 
 def index(request):
@@ -21,14 +22,24 @@ def users(request):
     return HttpResponse(us)
 
 
-from django.views.decorators.csrf import csrf_exempt
-
-
 @csrf_exempt
-def uploadImage(request):
-    if request.method == 'POST':
-        image_inm = request.FILES.get('file')
-        if image_inm:
-            image = Image(filename=image_inm.name, upload_time=timezone.now(), img_url=image_inm)
-            image.save()
+def upload_image(request):
+    if request.method == 'POST' and request.FILES and request.FILES.keys():
+        image_md5_key = request.POST['image_md5_key']
+        if Image.objects.filter(md5_key=image_md5_key):
+            return HttpResponse('existed.')
+
+        upload_user = request.POST['upload_user']
+        us = User.objects.filter(username=upload_user)
+
+        image_resource = request.FILES.get('file')
+
+        image = Image(
+            md5_key=image_md5_key,
+            filename=image_resource.name,
+            upload_user=us[0] if us else None,
+            upload_time=timezone.now(),
+            url=image_resource
+        )
+        image.save()
     return HttpResponse('ok')

@@ -36,12 +36,12 @@ class Image(models.Model):
     def __str__(self):
         return '<%s>%s' % (self.upload_time, self.filename)
 
-    # md5_key = models.CharField(max_length=36)
-    filename = models.CharField(max_length=200)
-    # upload_user = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
+    md5_key = models.CharField(max_length=36, default=' ')
+    filename = models.CharField(max_length=200, default=' ')
+    upload_user = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
     upload_time = models.DateTimeField('time upload')
     # 指定图片上传路径，即media/realm/
-    img_url = models.ImageField(upload_to='realm/', blank=True, null=True)
+    url = models.ImageField(upload_to='realm/', blank=True, null=True)
 
 
 class Article(models.Model):
