@@ -14,20 +14,25 @@ def index(request):
 
 def users(request):
     us = User.objects.all()
-    # users = []
-    # for user in us:
-    #     users.append(
-    #         {'username': user.username, 'nickname': user.nickname, 'email': user.email}
-    #     )
     return HttpResponse(us)
 
 
 @csrf_exempt
 def upload_image(request):
+    """
+    receive the uploading image
+    save it to media/realm
+    record in the table of realm_image
+    :param request: http request
+    :return: image：Image
+    """
+
     if request.method == 'POST' and request.FILES and request.FILES.keys():
         image_md5_key = request.POST['image_md5_key']
-        if Image.objects.filter(md5_key=image_md5_key):
-            return HttpResponse('existed.')
+        # 如果已经存在，直接返回图片信息
+        images = Image.objects.filter(md5_key=image_md5_key)
+        if images:
+            return HttpResponse(images[0])
 
         upload_user = request.POST['upload_user']
         us = User.objects.filter(username=upload_user)
@@ -42,4 +47,20 @@ def upload_image(request):
             url=image_resource
         )
         image.save()
-    return HttpResponse('ok')
+    return HttpResponse(image)
+
+
+@csrf_exempt
+def query_images(request, username):
+    """
+    query images where `username` uploaded
+    :param request: http request
+    :param username: user who uploaded
+    :return: images: list<Image>
+    """
+
+    us = User.objects.filter(username=username)
+    if not us:
+        return HttpResponse(None)
+
+    return HttpResponse(us[0].image_set.all().order_by('-upload_time')[:5])
