@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 
 class User(models.Model):
@@ -56,6 +57,8 @@ class Article(models.Model):
     title = models.CharField(max_length=100)
     comment = models.CharField(max_length=255)
     author = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
-    image = models.ImageField()
-    publish_time = models.DateTimeField('time published')
+    image = models.ForeignKey(Image, blank=True, null=True, on_delete=models.SET_NULL)
+    create_time = models.DateTimeField('time created', default=timezone.now())
+    update_time = models.DateTimeField('time updated', default=timezone.now())
+    publish_time = models.DateTimeField('time published', blank=True, null=True)
     content = models.TextField()

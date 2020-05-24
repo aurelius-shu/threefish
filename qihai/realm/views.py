@@ -1,9 +1,6 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.urls import reverse
-from django.views import generic
-from django.template import loader
-from .models import User, Image
+from .models import User, Image, Article
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -25,7 +22,7 @@ def from_image_model(image):
 
 
 def index(request):
-    return HttpResponse('<input accept="image/*,audio/*" type="file"/>')
+    return HttpResponse('Realm Index')
 
 
 def users(request):
@@ -40,6 +37,7 @@ def upload_image(request, username):
     save it to media/realm
     record in the table of realm_image
     :param request: http request
+    :param username:
     :return: image：Image
     """
 
@@ -100,8 +98,8 @@ def remove_image(request, username, uid):
     """
     delete image
     :param request: http request
-    :param username:  username: str
-    :param md5_key:  md5_key: str, Image.md5_key
+    :param username: username: str
+    :param uid:
     :return:
     """
 
@@ -110,3 +108,40 @@ def remove_image(request, username, uid):
         images = Image.objects.filter(upload_user=us[0], md5_key=uid)
         images.update(is_deleted=True)
     return HttpResponse('ok')
+
+
+@csrf_exempt
+def save_article(request, username):
+    res = {}
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        author = User.objects.get(username=username)
+        image = Image.objects.get(md5_key=data['image_md5_key'])
+        # 如果已经存在该文章，更新
+        if data['aid']:
+            articles = Article.objects.filter(id=data['aid'], author=author)
+            if articles:
+                articles.update(title=data['title'], content=data['content'], image=image, update_time=timezone.now())
+                res['is_succeed'] = True
+                res['message'] = '文章已更新'
+                res['aid'] = data['aid']
+        # 如果不存在该文章，创建，保存
+        else:
+            article = Article(
+                title=data['title'],
+                author=author,
+                content=data['content'],
+                image=image,
+                create_time=timezone.now(),
+            )
+            article.save()
+            res['is_succeed'] = True
+            res['message'] = '文章已创建'
+            res['aid'] = article.pk
+
+    return HttpResponse(json.dumps(res))
+
+
+@csrf_exempt
+def publish_article(request, username, aid):
+    pass
