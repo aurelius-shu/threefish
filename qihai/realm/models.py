@@ -1,5 +1,12 @@
 from django.db import models
 from django.utils import timezone
+from enum import Enum, unique
+
+
+@unique
+class ArticleStatus(Enum):
+    Saved = 1
+    Published = 2
 
 
 class User(models.Model):
@@ -58,7 +65,8 @@ class Article(models.Model):
     comment = models.CharField(max_length=255)
     author = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
     image = models.ForeignKey(Image, blank=True, null=True, on_delete=models.SET_NULL)
-    create_time = models.DateTimeField('time created', default=timezone.now())
-    update_time = models.DateTimeField('time updated', default=timezone.now())
+    status = models.IntegerField(choices=[(tag.value, tag.name) for tag in ArticleStatus], default=ArticleStatus.Saved.value)
+    create_time = models.DateTimeField('time created', default=timezone.now)
+    update_time = models.DateTimeField('time updated', default=timezone.now)
     publish_time = models.DateTimeField('time published', blank=True, null=True)
     content = models.TextField()

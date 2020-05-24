@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from .models import User, Image, Article
+from .models import User, Image, Article, ArticleStatus
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -112,6 +112,13 @@ def remove_image(request, username, uid):
 
 @csrf_exempt
 def save_article(request, username):
+    """
+    save article in dbms
+    :param request: http request
+    :param username: username: str
+    :return:
+    """
+
     res = {}
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -121,7 +128,10 @@ def save_article(request, username):
         if data['aid']:
             articles = Article.objects.filter(id=data['aid'], author=author)
             if articles:
-                articles.update(title=data['title'], content=data['content'], image=image, update_time=timezone.now())
+                articles.update(title=data['title'])
+                articles.update(content=data['content'])
+                articles.update(image=image)
+                articles.update(update_time=timezone.now())
                 res['is_succeed'] = True
                 res['message'] = '文章已更新'
                 res['aid'] = data['aid']
@@ -136,7 +146,7 @@ def save_article(request, username):
             )
             article.save()
             res['is_succeed'] = True
-            res['message'] = '文章已创建'
+            res['message'] = '文章保存成功'
             res['aid'] = article.pk
 
     return HttpResponse(json.dumps(res))
@@ -144,4 +154,25 @@ def save_article(request, username):
 
 @csrf_exempt
 def publish_article(request, username, aid):
-    pass
+    """
+    publish article
+    :param request: http request
+    :param username: username: str
+    :param aid: article id: Article.pk
+    :return:
+    """
+
+    res = {}
+    author = User.objects.get(username=username)
+    articles = Article.objects.filter(id=aid, author=author)
+    if articles:
+        articles.update(status=ArticleStatus.Published.value)
+        articles.update(publish_time=timezone.now())
+        res['is_succeed'] = True
+        res['message'] = '文章发布成功'
+        res['aid'] = articles[0].pk
+    else:
+        res['is_succeed'] = False
+        res['message'] = '文章不存在'
+        res['aid'] = aid
+    return HttpResponse(json.dumps(res))
