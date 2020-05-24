@@ -176,3 +176,28 @@ def publish_article(request, username, aid):
         res['message'] = '文章不存在'
         res['aid'] = aid
     return HttpResponse(json.dumps(res))
+
+
+@csrf_exempt
+def article_detail(request, username, aid):
+    """
+    article details
+    :param request: http request
+    :param username:  username: str
+    :param aid: article id: Article.pk
+    :return:
+    """
+
+    author = User.objects.get(username=username)
+    article = Article.objects.get(id=aid, author=author)
+    res = {
+        'is_succeed': True,
+        'message': '',
+        'data': {
+            'create_time': datetime.strftime(article.create_time, '%Y-%m-%d %H:%M:%S'),
+            'title': article.title,
+            'image': article.image.url.url,
+            'content': article.content,
+        }
+    }
+    return HttpResponse(json.dumps(res))

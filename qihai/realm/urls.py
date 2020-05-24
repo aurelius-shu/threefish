@@ -10,4 +10,5 @@ urlpatterns = [
     path('<str:username>/images/remove/<str:uid>', views.remove_image, name='removeImage'),
     path('<str:username>/articles/save', views.save_article, name='saveArticle'),
     path('<str:username>/articles/publish/<str:aid>', views.publish_article, name='publishArticle'),
+    path('<str:username>/articles/detail/<str:aid>', views.article_detail, name='ArticleDetail'),
 ]
