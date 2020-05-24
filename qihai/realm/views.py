@@ -34,7 +34,7 @@ def users(request):
 
 
 @csrf_exempt
-def upload_image(request):
+def upload_image(request, username):
     """
     receive the uploading image
     save it to media/realm
@@ -44,11 +44,11 @@ def upload_image(request):
     """
 
     res = {}
-
     if request.method == 'POST' and request.FILES and request.FILES.keys():
         image_md5_key = request.POST['image_md5_key']
+        us = User.objects.filter(username=username)
         # 如果已经存在，直接返回图片信息
-        images = Image.objects.filter(md5_key=image_md5_key)
+        images = Image.objects.filter(md5_key=image_md5_key, upload_user=us[0])
         if images:
             image = images[0]
             if image.is_deleted:
@@ -60,8 +60,6 @@ def upload_image(request):
                 res['is_succeed'] = False
             res['image'] = from_image_model(image)
         else:
-            upload_user = request.POST['upload_user']
-            us = User.objects.filter(username=upload_user)
             image_resource = request.FILES.get('file')
             image_name = image_resource.name
             image_resource.name = image_md5_key + '.' + image_name.split('.')[-1]
@@ -95,3 +93,20 @@ def query_images(request, username):
 
     images = list(map(from_image_model, us[0].image_set.filter(is_deleted=False).order_by('-upload_time')))
     return HttpResponse(json.dumps(images))
+
+
+@csrf_exempt
+def remove_image(request, username, uid):
+    """
+    delete image
+    :param request: http request
+    :param username:  username: str
+    :param md5_key:  md5_key: str, Image.md5_key
+    :return:
+    """
+
+    us = User.objects.filter(username=username)
+    if us:
+        images = Image.objects.filter(upload_user=us[0], md5_key=uid)
+        images.update(is_deleted=True)
+    return HttpResponse('ok')
