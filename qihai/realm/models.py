@@ -42,6 +42,7 @@ class Image(models.Model):
     upload_time = models.DateTimeField('time upload')
     # 指定图片上传路径，即media/realm/
     url = models.ImageField(upload_to='realm/', blank=True, null=True)
+    is_deleted = models.BooleanField('is deleted', default=False)
 
 
 class Article(models.Model):
