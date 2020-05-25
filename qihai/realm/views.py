@@ -120,34 +120,33 @@ def save_article(request, username):
     """
 
     res = {}
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        author = User.objects.get(username=username)
-        image = Image.objects.get(md5_key=data['image_md5_key'])
-        # 如果已经存在该文章，更新
-        if data['aid']:
-            articles = Article.objects.filter(id=data['aid'], author=author)
-            if articles:
-                articles.update(title=data['title'])
-                articles.update(content=data['content'])
-                articles.update(image=image)
-                articles.update(update_time=timezone.now())
-                res['is_succeed'] = True
-                res['message'] = '文章已更新'
-                res['aid'] = data['aid']
-        # 如果不存在该文章，创建，保存
-        else:
-            article = Article(
-                title=data['title'],
-                author=author,
-                content=data['content'],
-                image=image,
-                create_time=timezone.now(),
-            )
-            article.save()
+    data = json.loads(request.body)
+    author = User.objects.get(username=username)
+    image = Image.objects.get(md5_key=data['image_md5_key'])
+    # 如果已经存在该文章，更新
+    if data['aid']:
+        articles = Article.objects.filter(id=data['aid'], author=author)
+        if articles and len(Article.objects.filter(id=data['aid'], author=author)) > 0:
+            articles.update(title=data['title'])
+            articles.update(content=data['content'])
+            articles.update(image=image)
+            articles.update(update_time=timezone.now())
             res['is_succeed'] = True
-            res['message'] = '文章保存成功'
-            res['aid'] = article.pk
+            res['message'] = '文章已更新'
+            res['aid'] = data['aid']
+    # 如果不存在该文章，创建，保存
+    if not data['aid'] or not articles or len(Article.objects.filter(id=data['aid'], author=author)) < 1:
+        article = Article(
+            title=data['title'],
+            author=author,
+            content=data['content'],
+            image=image,
+            create_time=timezone.now(),
+        )
+        article.save()
+        res['is_succeed'] = True
+        res['message'] = '文章保存成功'
+        res['aid'] = article.pk
 
     return HttpResponse(json.dumps(res))
 
