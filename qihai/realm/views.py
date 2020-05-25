@@ -111,9 +111,9 @@ def remove_image(request, username, uid):
 
 
 @csrf_exempt
-def query_columns(request):
-    columns = Column.objects.all().order_by('-update_time')[:6]
-    res = list(map(lambda column: {'id': column.pk, 'name': column.name}, columns))
+def columns(request, username):
+    cols = Column.objects.all().order_by('-update_time')[:6]
+    res = list(map(lambda column: {'id': column.pk, 'name': column.name}, cols))
     return HttpResponse(json.dumps(res))
 
 
@@ -206,4 +206,21 @@ def article_detail(request, username, aid):
             'content': article.content,
         }
     }
+    return HttpResponse(json.dumps(res))
+
+
+@csrf_exempt
+def articles(request, username, cid):
+    author = User.objects.get(username=username)
+    arts = Article.objects.filter(author=author, column=cid, status=ArticleStatus.Published.value). \
+        order_by('-publish_time')
+    res = list(map(lambda article: {
+        'id': article.pk,
+        'title': article.title,
+        'comment': article.comment,
+        'publish_time': datetime.strftime(article.publish_time, '%Y-%m-%d %H:%M:%S'),
+        'update_time': datetime.strftime(article.update_time, '%Y-%m-%d %H:%M:%S'),
+        'column': article.column.name,
+        'image': article.image.url.url
+    }, arts))
     return HttpResponse(json.dumps(res))

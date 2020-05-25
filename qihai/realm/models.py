@@ -74,9 +74,10 @@ class Article(models.Model):
         return '<%s>%s' % (self.publish_time, self.title)
 
     title = models.CharField(max_length=100)
-    comment = models.CharField(max_length=255)
+    column = models.ForeignKey(Column, blank=True, null=True, on_delete=models.SET_NULL)
     author = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
     image = models.ForeignKey(Image, blank=True, null=True, on_delete=models.SET_NULL)
+    comment = models.CharField(max_length=255)
     status = models.IntegerField(choices=[(tag.value, tag.name) for tag in ArticleStatus],
                                  default=ArticleStatus.Saved.value)
     create_time = models.DateTimeField('time created', default=timezone.now)
