@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from .models import User, Image, Article, ArticleStatus
+from .models import User, Image, Column, Article, ArticleStatus
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -108,6 +108,13 @@ def remove_image(request, username, uid):
         images = Image.objects.filter(upload_user=us[0], md5_key=uid)
         images.update(is_deleted=True)
     return HttpResponse('ok')
+
+
+@csrf_exempt
+def query_columns(request):
+    columns = Column.objects.all().order_by('-update_time')[:6]
+    res = list(map(lambda column: {'id': column.pk, 'name': column.name}, columns))
+    return HttpResponse(json.dumps(res))
 
 
 @csrf_exempt

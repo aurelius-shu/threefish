@@ -53,6 +53,18 @@ class Image(models.Model):
     is_deleted = models.BooleanField('is deleted', default=False)
 
 
+class Column(models.Model):
+    """
+    栏目
+    """
+
+    name = models.CharField(max_length=10)
+    comment = models.CharField(max_length=255)
+    author = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
+    create_time = models.DateTimeField('time created', default=timezone.now)
+    update_time = models.DateTimeField('time updated', default=timezone.now)
+
+
 class Article(models.Model):
     """
     文章
@@ -65,7 +77,8 @@ class Article(models.Model):
     comment = models.CharField(max_length=255)
     author = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
     image = models.ForeignKey(Image, blank=True, null=True, on_delete=models.SET_NULL)
-    status = models.IntegerField(choices=[(tag.value, tag.name) for tag in ArticleStatus], default=ArticleStatus.Saved.value)
+    status = models.IntegerField(choices=[(tag.value, tag.name) for tag in ArticleStatus],
+                                 default=ArticleStatus.Saved.value)
     create_time = models.DateTimeField('time created', default=timezone.now)
     update_time = models.DateTimeField('time updated', default=timezone.now)
     publish_time = models.DateTimeField('time published', blank=True, null=True)
