@@ -131,9 +131,10 @@ def save_article(request, username):
     author = User.objects.get(username=username)
     image = Image.objects.get(md5_key=data['image_md5_key'])
     # 如果已经存在该文章，更新
-    if data['aid']:
-        articles = Article.objects.filter(id=data['aid'], author=author)
-        if articles and len(Article.objects.filter(id=data['aid'], author=author)) > 0:
+    aid = int(data['aid'])
+    if aid > 0:
+        articles = Article.objects.filter(id=aid, author=author)
+        if articles and len(articles) > 0:
             articles.update(title=data['title'])
             articles.update(content=data['content'])
             articles.update(image=image)
@@ -142,7 +143,7 @@ def save_article(request, username):
             res['message'] = '文章已更新'
             res['aid'] = data['aid']
     # 如果不存在该文章，创建，保存
-    if not data['aid'] or not articles or len(Article.objects.filter(id=data['aid'], author=author)) < 1:
+    if aid < 1 or not articles or len(articles) < 1:
         article = Article(
             title=data['title'],
             author=author,
