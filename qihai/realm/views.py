@@ -213,8 +213,12 @@ def article_detail(request, username, aid):
 @csrf_exempt
 def articles(request, username, cid):
     author = User.objects.get(username=username)
-    arts = Article.objects.filter(author=author, column=cid, status=ArticleStatus.Published.value). \
-        order_by('-publish_time')
+    if cid:
+        arts = Article.objects.filter(author=author, column=cid, status=ArticleStatus.Published.value). \
+            order_by('-publish_time')
+    else:
+        arts = Article.objects.filter(author=author, status=ArticleStatus.Published.value). \
+            order_by('-publish_time')
     res = list(map(lambda article: {
         'id': article.pk,
         'title': article.title,
