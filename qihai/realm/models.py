@@ -49,7 +49,7 @@ class Image(models.Model):
     upload_user = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
     upload_time = models.DateTimeField('time upload')
     # 指定图片上传路径，即media/realm/
-    url = models.ImageField(upload_to='realm/', blank=True, null=True)
+    image = models.ImageField(upload_to='realm/', blank=True, null=True)
     is_deleted = models.BooleanField('is deleted', default=False)
 
 
@@ -63,6 +63,7 @@ class Column(models.Model):
     author = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
     create_time = models.DateTimeField('time created', default=timezone.now)
     update_time = models.DateTimeField('time updated', default=timezone.now)
+    is_delete = models.BooleanField('is deleted', default=False)
 
 
 class Article(models.Model):

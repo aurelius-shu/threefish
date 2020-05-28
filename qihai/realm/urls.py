@@ -3,13 +3,22 @@ from . import views
 
 app_name = 'realm'
 urlpatterns = [
-    path('', views.index),
-    path('users', views.users),
+    # user
+    # register - post
+    path('register', views.register),
+    # signin - post
+    path('signin', views.signin),
+    # signout - post
+    path('signout', views.signout),
+
+    # admin
+    # list user - get
+    path('admin/users', views.admin_users),
 
     # column
-    # list
+    # list - get
     path('<str:username>/columns', views.columns),
-    # articles
+    # articles - get
     path('<str:username>/columns/<int:cid>/articles', views.query_articles_by_column),
 
     # article
@@ -19,6 +28,7 @@ urlpatterns = [
     path('<str:username>/articles/<int:aid>', views.get_or_update_article),
 
     # manage
+
     # article
     # list page - get
     path('<str:username>/manage/articles/<int:pid>', views.manage_articles_list),
@@ -35,7 +45,6 @@ urlpatterns = [
 
     # image
     # list - get;
-    path('<str:username>/manage/images', views.manage_images),
     # post - upload
     path('<str:username>/manage/images', views.manage_images),
     # remove

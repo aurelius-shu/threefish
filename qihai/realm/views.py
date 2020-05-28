@@ -1,5 +1,4 @@
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponse, Http404
 from .models import User, Image, Column, Article, ArticleStatus
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
@@ -7,111 +6,65 @@ import json
 from datetime import datetime
 
 
-def from_image_model(image):
-    """
-    build image info from `Image` Model
-    :param image: `Image` Model
-    :return: image info
-    """
-    return {
-        'uid': image.md5_key,
-        'name': image.filename,
-        'url': image.url.url,
-        'upload_time': datetime.strftime(image.upload_time, '%Y-%m-%d %H:%M:%S')
-    }
-
-
-def index(request):
-    return HttpResponse('Realm Index')
-
-
-def users(request):
-    us = User.objects.all()
-    return HttpResponse(us)
-
-
 @csrf_exempt
-def upload_image(request, username):
+def admin_users(request, page_index):
     """
-    receive the uploading image
-    save it to media/realm
-    record in the table of realm_image
-    :param request: http request
-    :param username:
-    :return: image：Image
-    """
-
-    res = {}
-    if request.method == 'POST' and request.FILES and request.FILES.keys():
-        image_md5_key = request.POST['image_md5_key']
-        user = User.objects.get(username=username)
-        # 如果已经存在，直接返回图片信息
-        images = Image.objects.filter(md5_key=image_md5_key, upload_user=user)
-        if images:
-            image = images[0]
-            if image.is_deleted:
-                images.update(is_deleted=False)
-                res['message'] = '图片上传成功'
-                res['is_succeed'] = True
-            else:
-                res['message'] = '图片已经上传'
-                res['is_succeed'] = False
-            res['image'] = from_image_model(image)
-        else:
-            image_resource = request.FILES.get('file')
-            image_name = image_resource.name
-            image_resource.name = image_md5_key + '.' + image_name.split('.')[-1]
-            image = Image(
-                md5_key=image_md5_key,
-                filename=image_name,
-                upload_user=us[0] if us else None,
-                upload_time=timezone.now(),
-                url=image_resource
-            )
-            image.save()
-            res['message'] = '图片上传成功'
-            res['is_succeed'] = True
-            res['image'] = from_image_model(image)
-
-    return HttpResponse(json.dumps(res))
-
-
-@csrf_exempt
-def query_images(request, username):
-    """
-    query images where `username` uploaded
-    :param request: http request
-    :param username: user who uploaded
-    :return: images: list<Image>
-    """
-
-    user = User.objects.get(username=username)
-    images = list(map(from_image_model, user.image_set.filter(is_deleted=False).order_by('-upload_time')))
-    return HttpResponse(json.dumps(images))
-
-
-@csrf_exempt
-def remove_image(request, username, image_md5_key):
-    """
-    delete image
-    :param request: http request
-    :param username: username: str
-    :param image_md5_key: Image.md5_key
+    list users
+    :param request:
+    :param page_index:
     :return:
     """
+    from .core.user import get_users_page
+    users_page = get_users_page(page_index=page_index)
+    return HttpResponse(json.dumps(users_page))
 
-    user = User.objects.get(username=username)
-    images = Image.objects.filter(upload_user=user, md5_key=image_md5_key)
-    images.update(is_deleted=True)
-    return HttpResponse('ok')
+
+@csrf_exempt
+def manage_images(request, username):
+    """
+    list images - get
+    upload images - post
+    :param request:
+    :param username:
+    :return:
+    """
+    # list
+    if request.method == 'GET':
+        from .core.image import get_images_by_user
+        images = get_images_by_user(username)
+        return HttpResponse(json.dumps(images))
+
+    # upload
+    if request.method == 'POST':
+        from .core.image import upload_image
+        res = upload_image(request, username)
+        return HttpResponse(json.dumps(res))
+
+    raise Http404
+
+
+@csrf_exempt
+def manage_images_remove(request, username, image_md5_key):
+    """
+
+    :param request:
+    :param username:
+    :param image_md5_key:
+    :return:
+    """
+    from .core.image import remove_image
+    res = remove_image(username, image_md5_key)
+    return HttpResponse(res)
 
 
 @csrf_exempt
 def columns(request, username):
-    cols = Column.objects.all().order_by('-update_time')[:6]
-    res = list(map(lambda column: {'id': column.pk, 'name': column.name}, cols))
-    return HttpResponse(json.dumps(res))
+    from .core.column import get_columns
+    cls = get_columns(username)
+    return HttpResponse(json.dumps(cls))
 
+
+###### 写到这里了 ######
 
 @csrf_exempt
 def save_article(request, username):
