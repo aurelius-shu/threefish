@@ -44,9 +44,9 @@ def upload_image(request, username):
     res = {}
     if request.method == 'POST' and request.FILES and request.FILES.keys():
         image_md5_key = request.POST['image_md5_key']
-        us = User.objects.filter(username=username)
+        user = User.objects.get(username=username)
         # 如果已经存在，直接返回图片信息
-        images = Image.objects.filter(md5_key=image_md5_key, upload_user=us[0])
+        images = Image.objects.filter(md5_key=image_md5_key, upload_user=user)
         if images:
             image = images[0]
             if image.is_deleted:
@@ -85,28 +85,24 @@ def query_images(request, username):
     :return: images: list<Image>
     """
 
-    us = User.objects.filter(username=username)
-    if not us:
-        return HttpResponse(None)
-
-    images = list(map(from_image_model, us[0].image_set.filter(is_deleted=False).order_by('-upload_time')))
+    user = User.objects.get(username=username)
+    images = list(map(from_image_model, user.image_set.filter(is_deleted=False).order_by('-upload_time')))
     return HttpResponse(json.dumps(images))
 
 
 @csrf_exempt
-def remove_image(request, username, uid):
+def remove_image(request, username, image_md5_key):
     """
     delete image
     :param request: http request
     :param username: username: str
-    :param uid:
+    :param image_md5_key: Image.md5_key
     :return:
     """
 
-    us = User.objects.filter(username=username)
-    if us:
-        images = Image.objects.filter(upload_user=us[0], md5_key=uid)
-        images.update(is_deleted=True)
+    user = User.objects.get(username=username)
+    images = Image.objects.filter(upload_user=user, md5_key=image_md5_key)
+    images.update(is_deleted=True)
     return HttpResponse('ok')
 
 
@@ -211,7 +207,7 @@ def article_detail(request, username, aid):
 
 
 @csrf_exempt
-def articles(request, username, cid):
+def query_articles_by_column(request, username, cid):
     author = User.objects.get(username=username)
     if cid:
         arts = Article.objects.filter(author=author, column=cid, status=ArticleStatus.Published.value). \
