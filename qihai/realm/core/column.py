@@ -10,6 +10,7 @@ def read_column(column):
     :return:
     """
     return {
+        'id': column.pk,
         'name': column.name,
         'comment': column.comment,
         'author': column.author.username,
@@ -20,6 +21,11 @@ def read_column(column):
 
 
 def get_columns(username):
+    """
+
+    :param username:
+    :return:
+    """
     user = get_object_or_404(User, username=username)
     columns = user.column_set.filter(is_delete=False).order_by('-update_time')
     return list(map(read_column, columns))

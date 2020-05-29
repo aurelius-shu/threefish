@@ -11,6 +11,7 @@ def read_user(user):
     return {
         'id': user.pk,
         'username': user.username,
+        'nickname': user.nickname,
         'phone': user.phone,
         'email': user.email,
         'reg_time': user.reg_time,

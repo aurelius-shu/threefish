@@ -7,6 +7,7 @@ from enum import Enum, unique
 class ArticleStatus(Enum):
     Saved = 1
     Published = 2
+    Removed = 3
 
 
 class User(models.Model):
@@ -28,6 +29,7 @@ class User(models.Model):
 
     username = models.CharField(max_length=200)
     nickname = models.CharField(max_length=200)
+    # avatar = models.ForeignKey(Image, blank=True, null=True, on_delete=models.SET_NULL)
     phone = models.CharField(max_length=13)
     email = models.CharField(max_length=30)
     password = models.CharField(max_length=128)
@@ -77,7 +79,7 @@ class Article(models.Model):
     title = models.CharField(max_length=100)
     column = models.ForeignKey(Column, blank=True, null=True, on_delete=models.SET_NULL)
     author = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
-    image = models.ForeignKey(Image, blank=True, null=True, on_delete=models.SET_NULL)
+    card = models.ForeignKey(Image, blank=True, null=True, on_delete=models.SET_NULL)
     comment = models.CharField(max_length=255)
     status = models.IntegerField(choices=[(tag.value, tag.name) for tag in ArticleStatus],
                                  default=ArticleStatus.Saved.value)

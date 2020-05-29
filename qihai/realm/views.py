@@ -1,9 +1,6 @@
 from django.http import HttpResponse, Http404
-from .models import User, Image, Column, Article, ArticleStatus
-from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 import json
-from datetime import datetime
 
 
 @csrf_exempt
@@ -114,7 +111,7 @@ def manage_get_article_page(request, username, page_index):
 
 
 @csrf_exempt
-def manage_articles(request, username):
+def manage_articles_create(request, username):
     """
 
     :param request:
@@ -125,121 +122,66 @@ def manage_articles(request, username):
     data = json.loads(request.body)
     article_id = create_article(
         username,
-        data['image_md5_key'],
         data['title'],
+        data['column_id'],
+        data['image_md5_key'],
+        data['comment'],
         data['content'],
     )
     return HttpResponse(article_id)
 
 
 @csrf_exempt
-def manage_article_edit(request, article_id):
-    pass
-
-
-@csrf_exempt
-def manage_article_update(request, article_id):
-    pass
-
-
-@csrf_exempt
-def manage_article_remove(request, article_id):
-    pass
-
-
-@csrf_exempt
-def manage_article_publish(request, article_id):
-    pass
-
-
-@csrf_exempt
-def manage_articles(request, username):
+def manage_articles_edit(request, username, article_id):
     """
-    save article in dbms
-    :param request: http request
-    :param username: username: str
+
+    :param request:
+    :param username:
+    :param article_id:
     :return:
     """
+    from .core.article import edit_article
+    article = edit_article(username, article_id)
+    return HttpResponse(json.dumps(article))
 
-    res = {}
-    data = json.loads(request.body)
-    author = User.objects.get(username=username)
-    image = Image.objects.get(md5_key=data['image_md5_key'])
-    # 如果已经存在该文章，更新
-    aid = int(data['aid'])
-    if aid > 0:
-        articles = Article.objects.filter(id=aid, author=author)
-        if articles and len(articles) > 0:
-            articles.update(title=data['title'])
-            articles.update(content=data['content'])
-            articles.update(image=image)
-            articles.update(update_time=timezone.now())
-            res['is_succeed'] = True
-            res['message'] = '文章已更新'
-            res['aid'] = data['aid']
-    # 如果不存在该文章，创建，保存
-    if aid < 1 or not articles or len(articles) < 1:
-        article = Article(
-            title=data['title'],
-            author=author,
-            content=data['content'],
-            image=image,
-            create_time=timezone.now(),
-        )
-        article.save()
-        res['is_succeed'] = True
-        res['message'] = '文章保存成功'
-        res['aid'] = article.pk
 
+@csrf_exempt
+def manage_articles_update(request, username, article_id):
+    """
+
+    :param request:
+    :param username:
+    :param article_id:
+    :return:
+    """
+    from .core.article import update_article
+    res = update_article(username, article_id, json.loads(request.body))
     return HttpResponse(json.dumps(res))
 
 
 @csrf_exempt
-def publish_article(request, username, aid):
-    """
-    publish article
-    :param request: http request
-    :param username: username: str
-    :param aid: article id: Article.pk
-    :return:
+def manage_articles_remove(request, username, article_id):
     """
 
-    res = {}
-    author = User.objects.get(username=username)
-    articles = Article.objects.filter(id=aid, author=author)
-    if articles:
-        articles.update(status=ArticleStatus.Published.value)
-        articles.update(publish_time=timezone.now())
-        res['is_succeed'] = True
-        res['message'] = '文章发布成功'
-        res['aid'] = articles[0].pk
-    else:
-        res['is_succeed'] = False
-        res['message'] = '文章不存在'
-        res['aid'] = aid
+    :param request:
+    :param username:
+    :param article_id:
+    :return:
+    """
+    from .core.article import remove_article
+    res = remove_article(username, article_id)
     return HttpResponse(json.dumps(res))
 
 
 @csrf_exempt
-def article_detail(request, username, aid):
-    """
-    article details
-    :param request: http request
-    :param username:  username: str
-    :param aid: article id: Article.pk
-    :return:
+def manage_articles_publish(request, username, article_id):
     """
 
-    author = User.objects.get(username=username)
-    article = Article.objects.get(id=aid, author=author)
-    res = {
-        'is_succeed': True,
-        'message': '',
-        'data': {
-            'create_time': datetime.strftime(article.create_time, '%Y-%m-%d %H:%M:%S'),
-            'title': article.title,
-            'image': article.image.url.url,
-            'content': article.content,
-        }
-    }
+    :param request:
+    :param username:
+    :param article_id:
+    :return:
+    """
+    from .core.article import publish_article
+    res = publish_article(username, article_id)
     return HttpResponse(json.dumps(res))

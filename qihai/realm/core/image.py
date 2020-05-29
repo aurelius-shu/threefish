@@ -16,7 +16,7 @@ def read_image(image):
         'filename': image.filename,
         'upload_user': image.upload_user,
         'upload_time': datetime.strftime(image.upload_time, '%Y-%m-%d %H:%M:%S'),
-        'url': image.image.url,
+        'image_url': image.image.url,
         'is_deleted': image.is_deleted,
     }
 

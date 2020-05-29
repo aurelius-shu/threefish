@@ -29,7 +29,7 @@ urlpatterns = [
 
     # image
     # list - get;
-    # post - upload
+    # upload - post
     path('<str:username>/manage/images', views.manage_images),
     # remove
     path('<str:username>/manage/images/<str:image_md5_key>/remove', views.manage_images_remove),
@@ -38,13 +38,13 @@ urlpatterns = [
     # list page - get
     path('<str:username>/manage/articles/<int:page_index>', views.manage_get_article_page),
     # create - post
-    path('<str:username>/manage/articles', views.manage_articles),
+    path('<str:username>/manage/articles', views.manage_articles_create),
     # edit - post
-    path('<str:username>/manage/articles/<int:article_id>/edit', views.manage_article_edit),
+    path('<str:username>/manage/articles/<int:article_id>/edit', views.manage_articles_edit),
     # update - post
-    path('<str:username>/manage/articles/<int:article_id>/update', views.manage_article_update),
+    path('<str:username>/manage/articles/<int:article_id>/update', views.manage_articles_update),
     # remove - post
-    path('<str:username>/manage/articles/<int:article_id>/remove', views.manage_article_remove),
+    path('<str:username>/manage/articles/<int:article_id>/remove', views.manage_articles_remove),
     # publish - post
-    path('<str:username>/manage/articles/<int:article_id>/publish', views.manage_article_publish),
+    path('<str:username>/manage/articles/<int:article_id>/publish', views.manage_articles_publish),
 ]
