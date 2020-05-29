@@ -20,6 +20,48 @@ def admin_users(request, page_index):
 
 
 @csrf_exempt
+def columns(request, username):
+    """
+
+    :param request:
+    :param username:
+    :return:
+    """
+    from .core.column import get_columns
+    cls = get_columns(username)
+    return HttpResponse(json.dumps(cls))
+
+
+@csrf_exempt
+def get_article_page_by_column(request, username, column_id, page_index):
+    """
+
+    :param request:
+    :param username:
+    :param column_id:
+    :param page_index:
+    :return:
+    """
+    from .core.article import get_article_page_by_column
+    article_page = get_article_page_by_column(username, column_id, page_index)
+    return HttpResponse(json.dumps(article_page))
+
+
+@csrf_exempt
+def get_article(request, username, article_id):
+    """
+
+    :param request:
+    :param username:
+    :param article_id:
+    :return:
+    """
+    from .core.article import get_article
+    article = get_article(username, article_id)
+    return HttpResponse(json.dumps(article))
+
+
+@csrf_exempt
 def manage_images(request, username):
     """
     list images - get
@@ -58,16 +100,60 @@ def manage_images_remove(request, username, image_md5_key):
 
 
 @csrf_exempt
-def columns(request, username):
-    from .core.column import get_columns
-    cls = get_columns(username)
-    return HttpResponse(json.dumps(cls))
+def manage_get_article_page(request, username, page_index):
+    """
 
+    :param request:
+    :param username:
+    :param page_index:
+    :return:
+    """
+    from .core.article import get_articles
+    article_page = get_articles(username, page_index)
+    return HttpResponse(json.dumps(article_page))
 
-###### 写到这里了 ######
 
 @csrf_exempt
-def save_article(request, username):
+def manage_articles(request, username):
+    """
+
+    :param request:
+    :param username:
+    :return:
+    """
+    from .core.article import create_article
+    data = json.loads(request.body)
+    article_id = create_article(
+        username,
+        data['image_md5_key'],
+        data['title'],
+        data['content'],
+    )
+    return HttpResponse(article_id)
+
+
+@csrf_exempt
+def manage_article_edit(request, article_id):
+    pass
+
+
+@csrf_exempt
+def manage_article_update(request, article_id):
+    pass
+
+
+@csrf_exempt
+def manage_article_remove(request, article_id):
+    pass
+
+
+@csrf_exempt
+def manage_article_publish(request, article_id):
+    pass
+
+
+@csrf_exempt
+def manage_articles(request, username):
     """
     save article in dbms
     :param request: http request
@@ -156,25 +242,4 @@ def article_detail(request, username, aid):
             'content': article.content,
         }
     }
-    return HttpResponse(json.dumps(res))
-
-
-@csrf_exempt
-def query_articles_by_column(request, username, cid):
-    author = User.objects.get(username=username)
-    if cid:
-        arts = Article.objects.filter(author=author, column=cid, status=ArticleStatus.Published.value). \
-            order_by('-publish_time')
-    else:
-        arts = Article.objects.filter(author=author, status=ArticleStatus.Published.value). \
-            order_by('-publish_time')
-    res = list(map(lambda article: {
-        'id': article.pk,
-        'title': article.title,
-        'comment': article.comment,
-        'publish_time': datetime.strftime(article.publish_time, '%Y-%m-%d %H:%M:%S'),
-        'update_time': datetime.strftime(article.update_time, '%Y-%m-%d %H:%M:%S'),
-        'column': article.column.name,
-        'image': article.image.url.url
-    }, arts))
     return HttpResponse(json.dumps(res))
