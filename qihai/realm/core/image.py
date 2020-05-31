@@ -1,4 +1,4 @@
-from qihai.realm.models import User, Image
+from ..models import User, Image
 from django.shortcuts import get_object_or_404
 from datetime import datetime
 from django.utils import timezone
@@ -14,9 +14,9 @@ def read_image(image):
         'id': image.pk,
         'md5_key': image.md5_key,
         'filename': image.filename,
-        'upload_user': image.upload_user,
+        'upload_user': image.upload_user.username,
         'upload_time': datetime.strftime(image.upload_time, '%Y-%m-%d %H:%M:%S'),
-        'image_url': image.image.url,
+        'image': image.image.url,
         'is_deleted': image.is_deleted,
     }
 

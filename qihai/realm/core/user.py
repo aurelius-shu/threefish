@@ -1,4 +1,4 @@
-from qihai.realm.models import User
+from ..models import User
 
 
 def read_user(user):
@@ -12,6 +12,7 @@ def read_user(user):
         'id': user.pk,
         'username': user.username,
         'nickname': user.nickname,
+        'avatar': user.avatar.image.url,
         'phone': user.phone,
         'email': user.email,
         'reg_time': user.reg_time,

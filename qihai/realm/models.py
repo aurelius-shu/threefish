@@ -29,7 +29,7 @@ class User(models.Model):
 
     username = models.CharField(max_length=200)
     nickname = models.CharField(max_length=200)
-    # avatar = models.ForeignKey(Image, blank=True, null=True, on_delete=models.SET_NULL)
+    avatar = models.ForeignKey(to='Image', blank=True, null=True, on_delete=models.SET_NULL)
     phone = models.CharField(max_length=13)
     email = models.CharField(max_length=30)
     password = models.CharField(max_length=128)

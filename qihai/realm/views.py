@@ -4,6 +4,21 @@ import json
 
 
 @csrf_exempt
+def register(request):
+    pass
+
+
+@csrf_exempt
+def signin(request):
+    pass
+
+
+@csrf_exempt
+def signout(request):
+    pass
+
+
+@csrf_exempt
 def admin_users(request, page_index):
     """
     list users

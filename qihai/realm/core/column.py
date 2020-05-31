@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from qihai.realm.models import User
+from ..models import User
 from datetime import datetime
 
 

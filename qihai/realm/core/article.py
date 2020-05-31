@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from qihai.realm.models import User, Column, ArticleStatus, Image, Article
+from ..models import User, Column, ArticleStatus, Image, Article
 from datetime import datetime
 from django.utils import timezone
 
@@ -15,12 +15,12 @@ def read_article_brief(article):
         'title': article.title,
         'column': article.column.name,
         'author': article.author.username,
-        'card_url': article.card.image.url,
+        'card': article.card.image.url,
         'comment': article.comment,
-        'status': article.status.name,
-        'create_time': datetime.strftime(article.create_time, '%Y-%m-%d %H:%M:%S'),
-        'update_time': datetime.strftime(article.update_time, '%Y-%m-%d %H:%M:%S'),
-        'publish_time': datetime.strftime(article.publish_time, '%Y-%m-%d %H:%M:%S'),
+        'status': ArticleStatus(article.status).name,
+        'create_time': datetime.strftime(article.create_time, '%Y-%m-%d %H:%M:%S') if article.create_time else None,
+        'update_time': datetime.strftime(article.update_time, '%Y-%m-%d %H:%M:%S') if article.update_time else None,
+        'publish_time': datetime.strftime(article.publish_time, '%Y-%m-%d %H:%M:%S') if article.publish_time else None,
     }
 
 
@@ -35,12 +35,12 @@ def read_article(article):
         'title': article.title,
         'column': article.column.name,
         'author': article.author.username,
-        'card_url': article.card.image.url,
+        'card': article.card.image.url,
         'comment': article.comment,
-        'status': article.status.name,
-        'create_time': datetime.strftime(article.create_time, '%Y-%m-%d %H:%M:%S'),
-        'update_time': datetime.strftime(article.update_time, '%Y-%m-%d %H:%M:%S'),
-        'publish_time': datetime.strftime(article.publish_time, '%Y-%m-%d %H:%M:%S'),
+        'status': ArticleStatus(article.status).name,
+        'create_time': datetime.strftime(article.create_time, '%Y-%m-%d %H:%M:%S') if article.create_time else None,
+        'update_time': datetime.strftime(article.update_time, '%Y-%m-%d %H:%M:%S') if article.update_time else None,
+        'publish_time': datetime.strftime(article.publish_time, '%Y-%m-%d %H:%M:%S') if article.publish_time else None,
         'content': article.content,
     }
 
@@ -54,7 +54,7 @@ def build_article_page(articles, page_index, page_size):
     :return:
     """
     counts = articles.count()
-    articles = articles.order_by('-publish_time')[(page_index - 1) * page_size, page_index * page_size]
+    articles = articles.order_by('-publish_time')[(page_index - 1) * page_size: page_index * page_size]
     return {
         'articles': list(map(read_article_brief, articles)),
         'page_num': (counts // page_size) + (1 if counts % page_size else 0)
@@ -87,7 +87,7 @@ def get_article(username, article_id):
     :return:
     """
     user = get_object_or_404(User, username=username)
-    article = user.article_set.filter(pk=article_id)
+    article = user.article_set.get(pk=article_id)
     return read_article(article)
 
 
@@ -193,7 +193,7 @@ def publish_article(username, article_id):
     :return:
     """
     author = get_object_or_404(User, username=username)
-    article = get_object_or_404(Article, pk=article_id, author=author)
+    article = Article.objects.filter(pk=article_id, author=author)
     article.update(status=ArticleStatus.Published.value)
     article.update(publish_time=timezone.now())
     article.update(update_time=timezone.now())
