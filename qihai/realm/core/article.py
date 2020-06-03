@@ -13,6 +13,7 @@ def read_article_brief(article):
     return {
         'id': article.pk,
         'title': article.title,
+        'column_id': article.column.id,
         'column': article.column.name,
         'author': article.author.username,
         'card': article.card.image.url,
@@ -33,6 +34,7 @@ def read_article(article):
     return {
         'id': article.pk,
         'title': article.title,
+        'column_id': article.column.id,
         'column': article.column.name,
         'author': article.author.username,
         'card': article.card.image.url,
