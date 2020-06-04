@@ -16,6 +16,7 @@ def read_article_brief(article):
         'column_id': article.column.id,
         'column': article.column.name,
         'author': article.author.username,
+        'card_id': article.card.id,
         'card': article.card.image.url,
         'comment': article.comment,
         'status': ArticleStatus(article.status).name,
@@ -37,6 +38,7 @@ def read_article(article):
         'column_id': article.column.id,
         'column': article.column.name,
         'author': article.author.username,
+        'card_id': article.card.id,
         'card': article.card.image.url,
         'comment': article.comment,
         'status': ArticleStatus(article.status).name,
@@ -153,7 +155,7 @@ def update_article(username, article_id, **kwargs):
     :return:
     """
     author = get_object_or_404(User, username=username)
-    article = get_object_or_404(Article, pk=article_id, author=author)
+    article = Article.objects.filter(pk=article_id, author=author)
 
     # title, column_id, image_md5_key, comment, content
     if 'title' in kwargs:
@@ -161,9 +163,9 @@ def update_article(username, article_id, **kwargs):
     if 'column_id' in kwargs:
         column = get_object_or_404(Column, pk=kwargs['column_id'])
         article.update(column=column)
-    if 'image_md5_key' in kwargs:
-        image = get_object_or_404(Image, md5_key=kwargs['image_md5_key'])
-        article.update(image=image)
+    if 'card_id' in kwargs:
+        card = get_object_or_404(Image, pk=kwargs['card_id'])
+        article.update(card=card)
     if 'comment' in kwargs:
         article.update(comment=kwargs['comment'])
     if 'content' in kwargs:

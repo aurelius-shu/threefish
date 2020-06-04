@@ -170,7 +170,7 @@ def manage_articles_update(request, username, article_id):
     :return:
     """
     from .core.article import update_article
-    res = update_article(username, article_id, json.loads(request.body))
+    res = update_article(username, article_id, **(json.loads(request.body)))
     return HttpResponse(json.dumps(res))
 
 
