@@ -139,7 +139,7 @@ def manage_articles_create(request, username):
         username,
         data['title'],
         data['column_id'],
-        data['image_md5_key'],
+        data['card_id'],
         data['comment'],
         data['content'],
     )

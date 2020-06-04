@@ -108,25 +108,25 @@ def get_articles(username, page_index, page_size=9):
     return build_article_page(articles, page_index, page_size)
 
 
-def create_article(username, title, column_id, image_md5_key, comment, content):
+def create_article(username, title, column_id, card_id, comment, content):
     """
 
     :param username:
     :param title:
     :param column_id:
-    :param image_md5_key:
+    :param card_id:
     :param comment:
     :param content:
     :return:
     """
     author = get_object_or_404(User, username=username)
-    image = get_object_or_404(Image, md5_key=image_md5_key)
+    card = get_object_or_404(Image, pk=card_id)
     column = get_object_or_404(Column, pk=column_id)
     article = Article(
         title=title,
         column=column,
         author=author,
-        image=image,
+        card=card,
         comment=comment,
         content=content,
     )
