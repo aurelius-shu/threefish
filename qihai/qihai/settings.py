@@ -36,6 +36,7 @@ CORS_ALLOW_HEADERS = ('*')
 # Application definition
 
 INSTALLED_APPS = [
+    'todo.apps.TodoConfig',
     'realm.apps.RealmConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -84,8 +85,8 @@ WSGI_APPLICATION = 'qihai.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'realm',
-        'HOST': 'localhost',
+        'NAME': 'qihai',
+        'HOST': 'centos-dev',
         'USER': "aurelius",
         'PASSWORD': "999999",
     },
@@ -124,7 +125,8 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+# mysql、oracle、sqlite 对应字段不支持时区，设置 true 将全部采用 utc 时区，设置 false 将丢弃时区，以当地时区写入时间值
+# USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
