@@ -6,7 +6,6 @@ from django.utils import timezone
 
 @unique
 class ProjectType(Enum):
-    undefined = 0
     learning = 1
     working = 2
     life = 3
@@ -22,7 +21,7 @@ class Status(Enum):
 
 class Project(models.Model):
     name = models.CharField(max_length=30, default=' ')
-    type = models.IntegerField(default=0, choices=[(tag.value, tag.name) for tag in ProjectType])
+    type = models.IntegerField(default=4, choices=[(tag.value, tag.name) for tag in ProjectType])
     status = models.IntegerField(default=1, choices=[(tag.value, tag.name) for tag in Status])
     owner = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, related_name='projects')
     create_time = models.DateTimeField(auto_now_add=True)
@@ -55,7 +54,7 @@ class Schedule(models.Model):
     comment = models.CharField(max_length=255, default=' ')
 
     def __str__(self):
-        return f"{self.start_time.astimezone(timezone.get_current_timezone()).strftime('%m-%d %H:%M')} -> {self.end_time.astimezone(timezone.get_current_timezone()).strftime('%m-%d %H:%M')} | {self.keyword}"
+        return f"{self.start_time.astimezone(timezone.get_current_timezone()).strftime('%m-%d')} -> {self.end_time.astimezone(timezone.get_current_timezone()).strftime('%m-%d')} | {self.keyword}"
 
 
 class Step(models.Model):
@@ -69,4 +68,4 @@ class Step(models.Model):
     outcome = models.CharField(max_length=255, default=' ')
 
     def __str__(self):
-        return f"{self.start_time.astimezone(timezone.get_current_timezone()).strftime('%m-%d %H:%M')} -> {self.end_time.astimezone(timezone.get_current_timezone()).strftime('%m-%d %H:%M')}"
+        return f"{self.start_time.astimezone(timezone.get_current_timezone()).strftime('%m-%d')}({self.start_time.astimezone(timezone.get_current_timezone()).strftime('%H:%M')} -> {self.end_time.astimezone(timezone.get_current_timezone()).strftime('%H:%M')})"

@@ -10,7 +10,7 @@ class ProjectAdmin(admin.ModelAdmin):
         'name', 'type', 'status', 'owner', 'create_time', 'update_time', 'comment'
     )
     ordering = ['-update_time']
-    list_filter = ['type', 'status']
+    list_filter = ['type', 'status', 'create_time']
     search_fields = ['name', 'create_time', 'comment']
 
 
@@ -22,7 +22,7 @@ class TaskAdmin(admin.ModelAdmin):
         'project', 'keyword', 'status', 'create_time', 'update_time', 'description',
     )
     ordering = ['-update_time']
-    list_filter = ['project', 'status', 'keyword']
+    list_filter = ['status', 'create_time', 'project']
     search_fields = ['keyword', 'create_time', 'description']
 
 
@@ -34,8 +34,8 @@ class ScheduleAdmin(admin.ModelAdmin):
         'keyword', 'status', 'create_time', 'update_time', 'start_time', 'end_time', 'comment',
     )
     ordering = ['-update_time']
-    list_filter = ['keyword', 'status', 'create_time', 'comment']
-    search_fields = ['keyword', 'status', 'create_time', 'comment']
+    list_filter = ['status', 'start_time', 'keyword', ]
+    search_fields = ['keyword', 'status', 'start_time', 'comment']
 
 
 class StepAdmin(admin.ModelAdmin):
@@ -46,8 +46,13 @@ class StepAdmin(admin.ModelAdmin):
         'schedule', 'task', 'status', 'create_time', 'update_time', 'start_time', 'end_time', 'outcome',
     )
     ordering = ['-update_time']
-    list_filter = ['schedule', 'task', 'status', 'create_time', 'outcome']
-    search_fields = ['schedule', 'task', 'status', 'create_time', 'outcome']
+    list_filter = ['status', 'start_time', 'schedule', 'task', ]
+    search_fields = ['schedule', 'task', 'status', 'start_time', 'outcome']
+
+
+# todo:
+#  1. task / step 添加 project 过滤
+#  2. 添加完成操作，未完成操作
 
 
 admin.site.register(Project, ProjectAdmin)
