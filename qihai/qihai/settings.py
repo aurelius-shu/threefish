@@ -126,7 +126,7 @@ USE_I18N = True
 USE_L10N = True
 
 # mysql、oracle、sqlite 对应字段不支持时区，设置 true 将全部采用 utc 时区，设置 false 将丢弃时区，以当地时区写入时间值
-# USE_TZ = True
+USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
