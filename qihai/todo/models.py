@@ -38,6 +38,10 @@ class Project(models.Model):
     def __str__(self):
         return f"{ProjectType(self.type).name} | {self.name}"
 
+    class Meta:
+        verbose_name = '项目'
+        verbose_name_plural = '项目'
+
 
 class Task(models.Model):
     project = models.ForeignKey(Project, verbose_name='所属项目', on_delete=models.CASCADE, related_name='tasks')
@@ -55,7 +59,11 @@ class Task(models.Model):
     was_completed.short_description = '是否完成'
 
     def __str__(self):
-        return f"{self.project.name} | {self.keyword}"
+        return f"{ProjectType(self.project.type).name} | {self.project.name} | {self.keyword}"
+
+    class Meta:
+        verbose_name = '任务'
+        verbose_name_plural = '任务'
 
 
 class Schedule(models.Model):
@@ -77,6 +85,10 @@ class Schedule(models.Model):
     def __str__(self):
         return f"{self.start_time.astimezone(timezone.get_current_timezone()).strftime('%m-%d')} -> {self.end_time.astimezone(timezone.get_current_timezone()).strftime('%m-%d')} | {self.keyword}"
 
+    class Meta:
+        verbose_name = '计划'
+        verbose_name_plural = '计划'
+
 
 class Step(models.Model):
     schedule = models.ForeignKey(Schedule, verbose_name='预约表', on_delete=models.CASCADE, related_name='steps')
@@ -91,13 +103,12 @@ class Step(models.Model):
     def was_completed(self):
         return Status.完成.value == self.status
 
-    def project(self):
-        return self.task.project
-
     was_completed.admin_order_field = 'update_time'
     was_completed.boolean = True
     was_completed.short_description = '是否完成'
-    project.short_description = '所属项目'
-
     def __str__(self):
         return f"{self.start_time.astimezone(timezone.get_current_timezone()).strftime('%m-%d')}({self.start_time.astimezone(timezone.get_current_timezone()).strftime('%H:%M')} -> {self.end_time.astimezone(timezone.get_current_timezone()).strftime('%H:%M')})"
+
+    class Meta:
+        verbose_name = '待办'
+        verbose_name_plural = '待办'

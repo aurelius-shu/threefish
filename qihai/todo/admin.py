@@ -1,5 +1,5 @@
 from django.contrib import admin
-from todo.models import Project, Task, Schedule, Step
+from todo.models import Project, Task, Schedule, Step, Status
 
 
 class TaskInline(admin.TabularInline):
@@ -14,6 +14,13 @@ class StepInline(admin.TabularInline):
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
+    def make_completed(self, request, queryset):
+        queryset.update(status=Status.完成.value)
+
+    make_completed.short_description = "完成所选的 项目"
+
+    actions = ['make_completed']
+
     fieldsets = (
         ('基础信息', {
             'fields': (('name', 'type', 'owner'), ('comment', 'status'))
@@ -25,12 +32,19 @@ class ProjectAdmin(admin.ModelAdmin):
     inlines = [TaskInline]
     ordering = ['-update_time']
     list_filter = ['type', 'status', 'create_time']
-    search_fields = ['name', 'create_time', 'comment']
-    list_per_page = 15
+    search_fields = ['name', 'update_time', 'comment']
+    list_per_page = 25
 
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
+    def make_completed(self, request, queryset):
+        queryset.update(status=Status.完成.value)
+
+    make_completed.short_description = "完成所选的 任务"
+
+    actions = ['make_completed']
+
     fieldsets = [
         ('基础信息', {'fields': [('keyword', 'project'), ('description', 'status'), ]})
     ]
@@ -38,43 +52,61 @@ class TaskAdmin(admin.ModelAdmin):
         'project', 'keyword', 'status', 'create_time', 'update_time', 'description', 'was_completed'
     )
     ordering = ['-update_time']
-    list_filter = ['status', 'create_time', 'project']
+    list_filter = ['status', 'update_time', 'project__type', 'project']
     search_fields = ['keyword', 'create_time', 'description']
-    list_per_page = 15
+    list_per_page = 25
 
 
 @admin.register(Schedule)
 class ScheduleAdmin(admin.ModelAdmin):
+    def make_completed(self, request, queryset):
+        queryset.update(status=Status.完成.value)
+
+    make_completed.short_description = "完成所选的 计划"
+
+    actions = ['make_completed']
+
     fieldsets = [
         ('基础信息', {'fields': [('keyword', 'status'), ('start_time', 'end_time'), 'comment', ]})
     ]
     list_display = (
-        'keyword', 'status', 'create_time', 'update_time', 'start_time', 'end_time', 'comment', 'was_completed'
+        'keyword', 'status', 'start_time', 'end_time', 'create_time', 'update_time', 'comment', 'was_completed'
     )
     inlines = [StepInline]
-    ordering = ['-update_time']
-    list_filter = ['status', 'start_time', 'keyword', ]
+    ordering = ['-start_time']
+    list_filter = ['status', 'update_time', 'keyword', ]
     search_fields = ['keyword', 'status', 'start_time', 'comment']
-    list_per_page = 15
+    list_per_page = 25
 
 
 @admin.register(Step)
 class StepAdmin(admin.ModelAdmin):
+    def make_completed(self, request, queryset):
+        queryset.update(status=Status.完成.value)
+
+    def make_undone(self, request, queryset):
+        queryset.update(status=Status.正在进行.value)
+
+    make_completed.short_description = "完成所选的 计划步骤"
+    make_undone.short_description = "重启所选的 计划步骤"
+
+    actions = ['make_completed', 'make_undone']
+
     fieldsets = [
         ('基础信息', {'fields': [('schedule', 'task'), ('start_time', 'end_time'), ('outcome', 'status'), ]})
     ]
     list_display = (
-        'schedule', 'task', 'project', 'status', 'create_time', 'update_time', 'start_time', 'end_time', 'outcome',
-        'was_completed'
+        'schedule', 'task', 'status', 'start_time', 'end_time', 'outcome', 'create_time', 'update_time', 'was_completed'
     )
     ordering = ['-update_time']
-    list_filter = ['status', 'start_time', 'task__project', 'schedule', 'task']
+    list_filter = ['status', 'start_time', 'schedule', 'task__project']
     search_fields = ['schedule', 'task', 'status', 'start_time', 'outcome']
-    list_per_page = 15
+    list_per_page = 25
 
 
 # todo:
-#  1. 添加完成操作，未完成操作
+#  1. 完成、未完成操作
+#  2. admin model reorder
 
 
 admin.site.site_title = 'qihai'
