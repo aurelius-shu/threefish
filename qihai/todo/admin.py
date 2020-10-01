@@ -1,5 +1,6 @@
 from django.contrib import admin
-from todo.models import Project, Task, Schedule, Step, Status
+
+from todo.models import Task, Step, Status, Project, Schedule
 
 
 class TaskInline(admin.TabularInline):
@@ -102,12 +103,3 @@ class StepAdmin(admin.ModelAdmin):
     list_filter = ['status', 'start_time', 'schedule', 'task__project']
     search_fields = ['schedule', 'task', 'status', 'start_time', 'outcome']
     list_per_page = 25
-
-
-# todo:
-#  1. 完成、未完成操作
-#  2. admin model reorder
-
-
-admin.site.site_title = 'qihai'
-admin.site.site_header = 'to-do'
