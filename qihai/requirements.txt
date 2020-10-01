@@ -2,7 +2,7 @@ amqp==2.6.1
 asgiref==3.2.7
 billiard==3.6.3.0
 celery==4.4.7
-Django==3.0.6
+Django==3.0.7
 django-cors-headers==3.3.0
 kombu==4.6.11
 mysqlclient==1.4.6
