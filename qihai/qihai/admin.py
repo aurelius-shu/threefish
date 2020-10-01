@@ -14,7 +14,7 @@ class QihaiAdminSite(admin.AdminSite):
             'Project': 1,
             'Task': 2,
             'Schedule': 3,
-            'Step': 4,
+            'Action': 4,
             'User': 6,
             'Group': 7,
         }
@@ -31,13 +31,13 @@ class QihaiAdminSite(admin.AdminSite):
 admin_qihai = QihaiAdminSite(name='Qihai')
 
 # 必须放在 TodoAdminSite 类的定义之后，否则在 register 时找不到定义
-from todo.admin import ProjectAdmin, TaskAdmin, ScheduleAdmin, StepAdmin
-from todo.models import Project, Task, Schedule, Step
+from todo.admin import ProjectAdmin, TaskAdmin, ScheduleAdmin, ActionAdmin
+from todo.models import Project, Task, Schedule, Action
 
 admin_qihai.register(Project, ProjectAdmin)
 admin_qihai.register(Task, TaskAdmin)
 admin_qihai.register(Schedule, ScheduleAdmin)
-admin_qihai.register(Step, StepAdmin)
+admin_qihai.register(Action, ActionAdmin)
 
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
