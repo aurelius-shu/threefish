@@ -11,3 +11,7 @@
 
 ### todo
 - 待办
+
+### 花生壳域名
+-- 3mu4572033.zicp.vip
+-- aurelius-shu.cn
