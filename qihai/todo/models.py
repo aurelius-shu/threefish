@@ -20,6 +20,7 @@ class Status(Enum):
 
 
 def consuming_format(delta):
+    delta = delta.days * 86400 + delta.seconds
     if delta < 60:
         return f'{delta}秒'
     if delta < 3600:
@@ -90,8 +91,7 @@ class Schedule(models.Model):
         return Status.完成.value == self.status
 
     def consume(self):
-        delta = (self.end_time - self.start_time).seconds
-        return consuming_format(delta)
+        return consuming_format(self.end_time - self.start_time)
 
     was_completed.admin_order_field = 'update_time'
     was_completed.boolean = True
@@ -120,8 +120,7 @@ class Action(models.Model):
         return Status.完成.value == self.status
 
     def consume(self):
-        delta = (self.end_time - self.start_time).seconds
-        return consuming_format(delta)
+        return consuming_format(self.end_time - self.start_time)
 
     was_completed.admin_order_field = 'update_time'
     was_completed.boolean = True
